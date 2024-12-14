@@ -1,6 +1,3 @@
-from itertools import groupby
-
-
 def solution(robots):
     X, Y = 101, 103
 
@@ -25,41 +22,17 @@ def solution(robots):
         if px > X // 2 and py > Y // 2:
             return 4
 
-    def symmx(robots):
-        res = []
-        for x, y in robots:
-            assert x < X // 2
-            res.append((X // 2 + X // 2 - x, y))
-        return res
-
-    def symmy(robots):
-        res = []
-        for x, y in robots:
-            assert y < Y // 2
-            res.append((x, Y // 2 + Y // 2 - y))
-        return res
-
-    def hash_(robots):
-        res = [ list("." * X) for _ in range(0, Y) ]
-        for p, _ in robots:
-            x, y = p
-            res[y][x] = "#"
-        return "\n".join(map(lambda r: "".join(r), res)) + "\n"
-
     def tree_coeff(robots):
-        qs = dict(
-            (qq, list(map(lambda r: r[0], robots)))
-            for qq, robots in groupby(filter(lambda robot: q(robot) != 0, sorted(robots, key=q)), key=q)
+        xs = list(map(lambda r: r[0][0], robots))
+        meanx = sum(xs) / len(xs)
+
+        ys = list(map(lambda r: r[0][1], robots))
+        meany = sum(ys) / len(ys)
+
+        return (
+            sum(map(lambda x: ((x - meanx) ** 2) / (len(xs) - 1), xs)) *
+            sum(map(lambda y: ((y - meany) ** 2) / (len(ys) - 1), ys))
         )
-
-        assert all(len(qs[i]) > 0 for i in range(1, 5))
-
-        xq1 = set(symmx(qs[1]))
-        q2 = set(qs[2])
-        xq3 = set(symmx(qs[3]))
-        q4 = set(qs[4])
-
-        return len(xq1 - q2) + len(xq3 - q4)
 
     states = []
 
